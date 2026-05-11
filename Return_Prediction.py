@@ -334,19 +334,12 @@ with right:
             })
             input_encoded = input_data.copy()
 
-            categorical_cols = [
-                "Category",
-                "Sub-Category",
-                "Segment",
-                "Region",
-                "City",
-                "State",
-                "Ship Mode"
-            ]
-
-            for col in categorical_cols:
-                if col in input_encoded.columns:
-                    input_encoded[col] = input_encoded[col].astype("category").cat.codes
+            for col in input_encoded.select_dtypes(include=["object"]).columns:
+                if col in label_encoders:
+                    le = label_encoders[col]
+                    input_encoded[col] = input_encoded[col].astype(str).apply(
+                        lambda x: le.transform([x])[0] if x in le.classes_ else -1
+                    )
 
             input_encoded = input_encoded.reindex(columns=model_columns, fill_value=0)
  

@@ -292,9 +292,12 @@ with body_up:
         ml_df["Order Date"] = ml_df["Order Date"].astype("int64") // 10**9
         ml_df["Ship Date"] = ml_df["Ship Date"].astype("int64") // 10**9
 
+        label_encoders = {}
+
         for col in ml_df.select_dtypes(include="object").columns:
             le = LabelEncoder()
             ml_df[col] = le.fit_transform(ml_df[col].astype(str))
+            label_encoders[col] = le
 
         ml_df = ml_df.fillna(0)
 
@@ -383,6 +386,7 @@ with body_up:
         joblib.dump(rf_model, "return_model.pkl")
         joblib.dump(X.columns.tolist(), "model_columns.pkl")
         joblib.dump(rf_threshold, "rf_threshold.pkl")
+        joblib.dump(label_encoders, "label_encoders.pkl")
 
         rf_prob  = rf_model.predict_proba(X_test)[:, 1]
         lr_prob  = lr_model.predict_proba(X_test)[:, 1]
