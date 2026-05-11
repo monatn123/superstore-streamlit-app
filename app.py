@@ -1,5 +1,24 @@
 import streamlit as st
+st.markdown("""
+<style>
 
+/* Hide sidebar completely */
+[data-testid="stSidebar"] {
+    display: none;
+}
+
+/* Remove sidebar spacing */
+[data-testid="stSidebarCollapsedControl"] {
+    display: none;
+}
+
+/* Expand main content fully */
+[data-testid="stAppViewContainer"] {
+    margin-left: 0;
+}
+
+</style>
+""", unsafe_allow_html=True)
 st.set_page_config(
     page_title="SuperStore Analytics App",
     layout="wide",
