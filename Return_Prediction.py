@@ -1,7 +1,7 @@
 import streamlit as st
 import joblib
 import pandas as pd
-
+label_encoders = joblib.load("label_encoders.pkl")
 model = joblib.load("return_model.pkl")
 model_columns = joblib.load("model_columns.pkl")
 rf_threshold = joblib.load("rf_threshold.pkl")
@@ -332,8 +332,24 @@ with right:
                 "Profit Ratio": [profit_ratio],
                 "Average Order Value": [avg_order_value]
             })
-            input_encoded = pd.get_dummies(input_data)
+            input_encoded = input_data.copy()
+
+            categorical_cols = [
+                "Category",
+                "Sub-Category",
+                "Segment",
+                "Region",
+                "City",
+                "State",
+                "Ship Mode"
+            ]
+
+            for col in categorical_cols:
+                if col in input_encoded.columns:
+                    input_encoded[col] = input_encoded[col].astype("category").cat.codes
+
             input_encoded = input_encoded.reindex(columns=model_columns, fill_value=0)
+ 
 
             prob = model.predict_proba(input_encoded)[0][1]
             prediction = 1 if prob >= rf_threshold else 0
